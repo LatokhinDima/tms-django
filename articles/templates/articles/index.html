@@ -1,0 +1,15 @@
+{% extends 'articles/base.html' %}
+
+{% block title %} Articles APP {% endblock %}
+
+{% block body %}
+    {% if articles %}
+        <ul>
+            {% for article in articles %}
+                <li><a href="{% url 'articles:detail' article.id %}">{{ article.title }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No articles are available.</p>
+    {% endif %}
+{% endblock %}
