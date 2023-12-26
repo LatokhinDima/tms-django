@@ -1,4 +1,4 @@
-import os
+
 import json
 from polls.models import Question, Choice
 
