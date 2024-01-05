@@ -6,7 +6,6 @@ from django.utils import timezone
 from .models import Question, Choice
 
 
-
 def index(request):
     questions = Question.objects \
                     .filter(status=Question.Status.APPROVED) \
