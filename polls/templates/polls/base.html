@@ -2,8 +2,16 @@
 <html lang="en">
 <head>
     <title>{% block title %}Polls APP{% endblock %}</title>
-</head>
+    {% if user.is_authenticated %}
+        <form action="{% url 'logout' %" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Logout" class="btn btn-danger"/>
+        </form>
+    {% else %}
+        <a href="{% url 'login' %}" class="btn btn-info">Login</a>
+    {% endif %}
+        </head>
 <body>
-    {% block body %}{% endblock %}
+{% block body %}{% endblock %}
 </body>
 </html>
