@@ -11,5 +11,25 @@
                 <li><a href="{% url 'shop:detail' product.id %}">{{ product.name }}</a></li>
             {% endfor %}
         </ul>
-    {% endfor %}
+    {% endfor %} <br>
+</div>
+        <div class="row">
+            <div class="large-3 large-offset-5 columns">
+                <ul class="pagination">
+                    {% if index.has_previous %}
+                        <li class="arrow"><a href="/page/{{ index.previous_page_number }}/">&laquo;</a></li>
+                    {% else %}
+                        <li class="arrow unavailable"><a href="">&laquo;</a> </li>
+                    {% endif %}
+                    {% for page in index.paginator.page_range %}
+                        {% if page == index.number %}
+                            <li class="current"><a href="/page/{{ page }}/">{{ page }}</a></li>
+                        {% else %}
+                            <li><a href="/page/{{ page }}/">{{ page }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
 {% endblock %}

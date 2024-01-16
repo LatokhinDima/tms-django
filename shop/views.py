@@ -1,15 +1,17 @@
 
 
 from django.shortcuts import get_object_or_404, render
-
+from django.core.paginator import Paginator
 from shop.models import Category, Product
 
 
 
-def index(request):
+def index(request, page_number=1):
+    all_products = Category.objects.all()
+    current_page = Paginator(all_products, 4)
     context = {
         #'products': Product.objects.all(),
-        'categories': Category.objects.all()
+        'categories': current_page.page(page_number)
     }
     Category.objects.prefetch_related(Product.__name__)
     return render(request, 'shop/index.html', context)
