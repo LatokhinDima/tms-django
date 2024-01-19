@@ -1,24 +1,22 @@
-
-
+from django.views.generic import ListView
 from django.shortcuts import get_object_or_404, render
 from django.core.paginator import Paginator
 from shop.models import Category, Product
 
 
-
-def index(request, page_number=1):
-    all_products = Category.objects.all()
-    current_page = Paginator(all_products, 4)
-    context = {
-        #'products': Product.objects.all(),
-        'categories': current_page.page(page_number)
-    }
+def index(request):
+    category_list = Category.objects.all()
+    paginator = Paginator(category_list, 2)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     Category.objects.prefetch_related(Product.__name__)
-    return render(request, 'shop/index.html', context)
+    return render(request, 'shop/index.html', {'categories': category_list, "page_obj": page_obj})
+
 
 def detail(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     return render(request, 'shop/detail.html', {'product': product})
+
 
 def category(request, category_id):
     category = get_object_or_404(Category, id=category_id)
