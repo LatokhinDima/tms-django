@@ -1,0 +1,45 @@
+html {
+    font-size: 16px
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #000;
+    background-color: #fff;
+    min-weight: 320px;
+}
+
+img {
+    max-weight: 100%;
+    height: auto;
+}
+
+section {
+    padding: 50px 0;
+}
+
+a {
+    color: #111;
+}
+
+a:hover {
+    color: #555;
+}
+
+/* Heder */
+
+.top-menu li a::after {
+    content: '';
+    display: block;
+    width: 100%;
+    background-color: #111;
+    height: 1px;
+    transition: all .3s;
+    transform: scale(0);
+}
+
+.top-menu li a:hover::after {
+    transform: scale(1);
+}

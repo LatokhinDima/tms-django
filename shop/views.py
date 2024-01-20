@@ -7,7 +7,7 @@ from django.views.decorators.cache import cache_page
 
 def index(request):
     category_list = Category.objects.all()
-    paginator = Paginator(category_list, 3)
+    paginator = Paginator(category_list, 5)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     Category.objects.prefetch_related(Product.__name__)
