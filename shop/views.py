@@ -1,8 +1,10 @@
 from django.views.generic import ListView
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.core.paginator import Paginator
 from shop.models import Category, Product
 from django.views.decorators.cache import cache_page
+from django.contrib.auth import login, authenticate
+from .forms import SignUpForm
 
 
 def index(request):
@@ -27,3 +29,20 @@ def category(request, category_id):
         'category': category
     }
     return render(request, 'shop/category.html', context)
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            user.refresh_from_db()
+            user.email = form.cleaned_data.get('email')
+            user.save()
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=user.username, password=raw_password)
+            login(request, user)
+            return redirect('page/')
+    else:
+        form = SignUpForm()
+    return render(request, 'shop/registration.html', {'form': form})

@@ -28,13 +28,15 @@
           <a class="nav-link active" aria-current="page" href="{% url 'shop:index' %}"><i class="fa-solid fa-house-chimney"></i> Home</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="{% url 'shop:signup' %}"><i class="fa-solid fa-user"></i> Registration</a>
+        <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="#"><i class="fa-solid fa-cart-shopping"></i> Shopping cart</a>
         </li>
       </ul>
 
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0 top-menu">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#"><i class="fa-solid fa-user"></i> New user</a>
+        <a class="nav-link active" aria-current="page" href="#"><i class="fa-solid fa-user-check"></i> {{ user.username }}<br> {{ user.email }}</a>
         </li>
       </ul>
     </div>
