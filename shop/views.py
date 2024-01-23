@@ -1,11 +1,12 @@
 from django.views.generic import ListView
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
 from django.core.paginator import Paginator
-from shop.models import Category, Product
+from shop.models import Category, Product, Order, OrderEntry
 from django.views.decorators.cache import cache_page
 from django.contrib.auth import login, authenticate
 from .forms import SignUpForm
-
+from django.http import HttpRequest, Http404
 
 def index(request):
     category_list = Category.objects.all()
@@ -46,3 +47,11 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'shop/registration.html', {'form': form})
+
+
+@login_required
+def add_to_cart(request: HttpRequest, product_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Product, id=product_id)
+        request.user.profile.shopping_cart.add_product(product)
+    return redirect('shop:detail', product_id)
