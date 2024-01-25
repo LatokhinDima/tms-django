@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth.views import LoginView, LogoutView
 urlpatterns = [
+    path('api/', include('api.urls')),
     path('polls/', include('polls.urls')),
     path('admin/', admin.site.urls),
     path('articles/', include('articles.urls')),

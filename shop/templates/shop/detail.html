@@ -3,7 +3,7 @@
 {% block title %} Product {% endblock %}
 
 {% block breadcrumbs %}
-    {{ block.super }}
+
     <li class="breadcrumb" style="margin-right: 30px;"><a href="{% url 'shop:category' product.category.id %}">{{ product.category.name }}</a></li>
     <li class="breadcrumb" style="margin-right: 30px;"><a href="{{ request.path }}">{{ product.name }}</a></li>
 {% endblock %}
@@ -12,13 +12,17 @@
 {% block body %}
     <h1>{{ product.name }}</h1>
     <p><a href="{% url 'shop:category' product.category.id %}">{{ product.category.name }}</a></p>
-    <p>{{ product.description }}</p>
-    <p>{{ product.price }}</p>
+    <p>Description: {{ product.description }}</p>
+    <p>Price: {{ product.price }} $</p>
 
-<form action="{% url 'shop:add_to_cart' product.id %}" method="post">
-        {% csrf_token %}
-        <input type="submit" class="btn-primary" value="Add to cart"/>
-    </form>
-
+{% if user.is_authenticated %}
+        <form action="{% url 'shop:add_to_cart' product.id %}" method="post">
+            {% csrf_token %}
+            <input type="submit" class="btn btn-danger" value= "Add to cart"/>
+            <i class="fa-solid fa-cart-plus fa-2xl"></i>
+        </form>
+{% else %}
+        <input type="submit" class="btn btn-danger" value= "To add to the shopping cart, register!"/>
+{% endif %}
 
 {% endblock %}

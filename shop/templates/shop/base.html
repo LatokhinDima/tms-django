@@ -29,11 +29,16 @@
         </li>
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="{% url 'shop:signup' %}"><i class="fa-solid fa-user"></i> Registration</a>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#"><i class="fa-solid fa-cart-shopping"></i> Shopping cart</a>
-        </li>
+        {% if user.is_authenticated %}
+            <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'shop:my_shopping_cart' %}"><i class="fa-solid fa-cart-shopping"></i> Shopping cart</a>
+            </li>
+        {% else %}
+            <li class="nav-item">
+            <a class="visually-hidden"</a>
+            </li>
+        {% endif %}
       </ul>
-
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0 top-menu">
         <li class="nav-item">
         <a class="nav-link active" aria-current="page" href="#"><i class="fa-solid fa-user-check"></i> {{ user.username }}<br> {{ user.email }}</a>
@@ -47,6 +52,7 @@
             <input type="submit" value="Logout" class="btn btn-danger"/>
         </form>
     {% else %}
+
         <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-danger" >Login</a>
     {% endif %}
 </nav>

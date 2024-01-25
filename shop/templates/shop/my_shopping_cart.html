@@ -1,0 +1,36 @@
+{% extends 'shop/base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% block head %}
+<head>
+    <meta charset="UTF-8">
+    {% block title %} My shopping cart {% endblock %}
+</head>
+
+{% endblock %}
+
+
+
+{% block body %}
+<h1>My shopping cart </h1>
+<ul>
+{% for entry in entries %}
+        <li><a href="{% url 'shop:detail' entry.product.id %}">{{ entry.product.name }}</a></li>
+        <p>Price: {{ entry.product.price }} $</p>
+        <p>Quantity: {{ entry.count }} </p>
+        <p>Total price: {{ total_amount }} </p>
+    <p>Total price: {{ order }} </p>
+
+<ul>
+
+{% endfor %}
+
+
+
+
+
+
+
+{% endblock %}
+</html>
