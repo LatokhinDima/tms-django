@@ -3,6 +3,7 @@
 {% block title %}  {% endblock %}
 
 {% block body %}
+    <style> h1 {color: #00FF00;} </style>
     <h1>Products</h1>
     {% for category in page_obj %}
         {{ category.full_name|upper }}<br>

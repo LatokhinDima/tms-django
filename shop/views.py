@@ -72,9 +72,33 @@ def add_to_cart(request, product_id):
 def my_shopping_cart(request):
     profile: Profile = Profile.objects.filter(user=request.user).first()
     if (not profile.shopping_cart) or len(profile.shopping_cart.order_entries.all()) == 0:
-        return render(request, 'shop/my_shopping_cart.html', {})
+        return render(request, 'shop/my_shopping_cart.html')
+
     entries = profile.shopping_cart.order_entries.all().order_by('-id')
     total_price = sum([(entry.product.price * entry.count) for entry in entries])
     return render(request, 'shop/my_shopping_cart.html', {'entries': entries,
                                                           'total_price': total_price})
 
+
+@login_required
+def shopping_cart_delete(request):
+    profile: Profile = Profile.objects.filter(user=request.user).first()
+
+    if profile.shopping_cart:
+        profile.shopping_cart.delete()
+
+    return redirect('shop:my_shopping_cart')
+
+
+@login_required
+def make_order(request):
+    profile: Profile = Profile.objects.filter(user=request.user).first()
+
+    order = profile.shopping_cart
+    order.status = Status.COMPLETED
+    order.save()
+
+    profile.shopping_cart = None
+    profile.save()
+
+    return render(request, 'shop/make_order.html')

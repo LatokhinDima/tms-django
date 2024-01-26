@@ -12,5 +12,9 @@ urlpatterns = [
     path('signup/page/', views.index, name='index'),
     path('add_to_cart/<int:product_id>', views.add_to_cart, name='add_to_cart'),
     path('my_shopping_cart/', views.my_shopping_cart, name='my_shopping_cart'),
+    path('shopping_cart_delete/', views.shopping_cart_delete, name='shopping_cart_delete'),
+    path('make_order/', views.make_order, name='make_order'),
+
+
 
 ]

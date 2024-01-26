@@ -45,11 +45,6 @@ class Status(models.TextChoices):
 
 
 class Order(models.Model):
-    class Status(models.TextChoices):
-        INITIAL = 'INITIAL', 'Initial'
-        COMPLETED = 'COMPLETED', 'Completed'
-        DELIVERED = 'DELIVERED', 'Delivered'
-
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='orders')
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.INITIAL)
 

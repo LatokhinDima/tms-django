@@ -1,16 +1,17 @@
 {% extends 'shop/base.html' %}
-{% block title %}Корзина{% endblock %}
+{% block title %}My_shopping_cart{% endblock %}
 {% block body %}
-    <div class="container mt-4">
-        <h2>Моя корзина</h2>
-
-        <table class="table">
+    <div class="mt-2">
+        <style> h1 {color: #00FF00;} </style>
+        <h1>My shopping cart</h1>
+        <br>
+        <table class="table" align="left" bgcolor="DFF5D8">
+            <h3> Your order, {{ user.username }} : </h3>
             <thead>
             <tr>
-                <th scope="col">Продукт</th>
-                <th scope="col">Цена</th>
-                <th scope="col">Количество</th>
-                <th scope="col">Действия</th>
+                <th scope="col">Product</th>
+                <th scope="col">Price</th>
+                <th scope="col">Count</th>
             </tr>
             </thead>
             <tbody>
@@ -19,20 +20,25 @@
                     <td>
                         <a href="{% url 'shop:detail' entry.product.id %}">{{ entry.product.name }}</a>
                     </td>
-                    <td>{{ entry.product.price }} руб.</td>
-                    <td>
-                        <
-                    </td>
-                    <td>
-
-                    </td>
+                    <td>{{ entry.product.price }} $</td>
+                    <td> {{ entry.count }} </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
-
-        <p class="total">Сумма заказа: <span id="totalAmount" class="font-weight-bold">{{ total_amount }} руб.</span>
+        <p style="background-color:#DFF5D8;">Total: &nbsp; <span id="total_price" class="font-weight-bold">{{ total_price }} $</span>
         </p>
+        <form action="{% url 'shop:shopping_cart_delete' %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Empty the shopping cart" class="btn btn-danger"/>
+            <i class="fa-solid fa-trash-can fa-2xl" style="color: #c01c28;"></i>
+        </form>
+        <br>
+        <form action="{% url 'shop:make_order' %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Place an order" class="btn btn-danger"/>
+            <i class="fa-solid fa-cash-register fa-2xl" style="color: #e01b24;"></i>
+        </form>
 
     </div>
 {% endblock %}
