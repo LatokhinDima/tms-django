@@ -143,3 +143,7 @@ CACHES = {
        "LOCATION": "redis://127.0.0.1:6379",
    }
 }
+
+REST_FRAMEWORK = {
+   'DEFAULT_PAGINATION_CLASS': 'api.pagination.DefaultPagination',
+}
