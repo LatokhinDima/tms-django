@@ -1,12 +1,9 @@
-from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
 from django.core.paginator import Paginator
-from shop.models import Category, Product, Order, OrderEntry, Profile
-from django.views.decorators.cache import cache_page
+from shop.models import Category, Product, Order, OrderEntry, Profile, Status
 from django.contrib.auth import login, authenticate
 from .forms import SignUpForm
-from django.http import HttpRequest, Http404
 
 
 def index(request):
@@ -50,31 +47,34 @@ def signup(request):
     return render(request, 'shop/registration.html', {'form': form})
 
 
+def profile_cart_init(user):
+    profile: Profile = Profile.objects.get_or_create(user=user)[0]
+    if not profile.shopping_cart:
+        profile.shopping_cart = (profile.orders.filter(status=Status.INITIAL).first()
+                                 or Order.objects.create(profile=profile, status=Status.INITIAL))
+        profile.save()
+
+    return profile.shopping_cart
+
+
 @login_required
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    profile = Profile.objects.get(user=request.user)
-    if not profile.shopping_cart:
-        order = Order.objects.create(profile=profile)
-        profile.shopping_cart = order
-        profile.save()
-    else:
-        order = profile.shopping_cart
-    order_entry, created = OrderEntry.objects.get_or_create(order=order, product=product)
-    if not created:
-        order_entry.count += 1
-        order_entry.save()
+    current_order = profile_cart_init(request.user)
+    entry = OrderEntry.objects.get_or_create(order=current_order,
+                                             product=product)[0]
+    entry.count += 1
+    entry.save()
     return redirect('shop:detail', product_id)
 
 
 @login_required
 def my_shopping_cart(request):
-    categories = Category.objects.all()
-    profile = Profile.objects.get(user=request.user)
-    order = Order.objects.filter(profile=profile, status=Order.Status.INITIAL).first()
-    if not order:
-        order = Order.objects.create(profile=profile, status=Order.Status.INITIAL)
-    entries = order.entries.all().order_by('product__id')
-    total_amount = sum(entry.count * entry.product.price for entry in order.entries.all())
-    return render(request, 'shop/my_shopping_cart.html',
-                  {'order': order, 'total_amount': total_amount, 'categories': categories, 'entries': entries, })
+    profile: Profile = Profile.objects.filter(user=request.user).first()
+    if (not profile.shopping_cart) or len(profile.shopping_cart.order_entries.all()) == 0:
+        return render(request, 'shop/my_shopping_cart.html', {})
+    entries = profile.shopping_cart.order_entries.all().order_by('-id')
+    total_price = sum([(entry.product.price * entry.count) for entry in entries])
+    return render(request, 'shop/my_shopping_cart.html', {'entries': entries,
+                                                          'total_price': total_price})
+

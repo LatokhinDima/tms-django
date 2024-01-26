@@ -1,36 +1,38 @@
 {% extends 'shop/base.html' %}
-<!DOCTYPE html>
-<html lang="en">
-
-{% block head %}
-<head>
-    <meta charset="UTF-8">
-    {% block title %} My shopping cart {% endblock %}
-</head>
-
-{% endblock %}
-
-
-
+{% block title %}Корзина{% endblock %}
 {% block body %}
-<h1>My shopping cart </h1>
-<ul>
-{% for entry in entries %}
-        <li><a href="{% url 'shop:detail' entry.product.id %}">{{ entry.product.name }}</a></li>
-        <p>Price: {{ entry.product.price }} $</p>
-        <p>Quantity: {{ entry.count }} </p>
-        <p>Total price: {{ total_amount }} </p>
-    <p>Total price: {{ order }} </p>
+    <div class="container mt-4">
+        <h2>Моя корзина</h2>
 
-<ul>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Продукт</th>
+                <th scope="col">Цена</th>
+                <th scope="col">Количество</th>
+                <th scope="col">Действия</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for entry in entries %}
+                <tr>
+                    <td>
+                        <a href="{% url 'shop:detail' entry.product.id %}">{{ entry.product.name }}</a>
+                    </td>
+                    <td>{{ entry.product.price }} руб.</td>
+                    <td>
+                        <
+                    </td>
+                    <td>
 
-{% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 
+        <p class="total">Сумма заказа: <span id="totalAmount" class="font-weight-bold">{{ total_amount }} руб.</span>
+        </p>
 
-
-
-
-
-
+    </div>
 {% endblock %}
-</html>
