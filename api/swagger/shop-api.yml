@@ -36,5 +36,5 @@ path:
                     type: integer
           400:
             description: Non-exist product id
-
+paths:
 
