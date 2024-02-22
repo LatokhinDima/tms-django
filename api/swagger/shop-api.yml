@@ -9,7 +9,65 @@ servers:
   - url: http://localhost:8000/api
     description: Local host for debugging
 
-path:
+ecurity:
+  - bearerAuth: [ ]
+
+paths:
+  /token/:
+    post:
+      summary: Obtain authentication token
+      requestBody:
+        description: User credentials (username and password)
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access:
+                    type: string
+                    description: Access token
+                  refresh:
+                    type: string
+                    description: Refresh token
+        401:
+          description: Wrong username and/or password
+
+  /token/refresh/:
+    post:
+      summary: Refresh access token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh:
+                  type: string
+                  description: Refresh token
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access:
+                    type: string
+                    description: Access token
+
   /products/{product_id}:
     get:
       parameters:
@@ -36,5 +94,3 @@ path:
                     type: integer
           400:
             description: Non-exist product id
-paths:
-
