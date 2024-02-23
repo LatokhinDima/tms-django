@@ -2,15 +2,12 @@ openapi: 3.0.0
 info:
   title: Shop App
   description: |
-    API provides possibility ....
+    API provides possibility ...
   version: 1.0.0
 
 servers:
   - url: http://localhost:8000/api
     description: Local host for debugging
-
-security:
-  - bearerAuth: []
 
 paths:
   /token/:
@@ -68,29 +65,407 @@ paths:
                     type: string
                     description: Access token
 
-  /products/{product_id}:
+  /register/:
+    post:
+      summary: Register a new user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistration'
+      responses:
+        200:
+          description: User has been created
+
+  /products/{product_id}/:
     get:
       parameters:
-        - name: product_id
-          in: path
-          required: true
-          schema:
-            type: integer
+        - $ref: '#/components/parameters/path_product_id'
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  name:
-                    type: string
-                  description:
-                    type: string
-                  price:
-                    type: number
-                  category:
-                    type: integer
-          400:
-            description: Non-exist product id
+                $ref: '#/components/schemas/Product'
+
+  /products/:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/query_category_id'
+        - $ref: '#/components/parameters/page_size'
+        - $ref: '#/components/parameters/page'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProducts'
+
+  /categories/{category_id}/:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/path_category_id'
+        - $ref: '#/components/parameters/include_products'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+
+  /categories/:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/include_products'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCategories'
+
+  /add_to_cart/:
+    post:
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductId'
+      responses:
+        200:
+          description: Product is added to card
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          description: Non-existent product id
+
+  /cart/:
+    get:
+      summary: Get user's cart (i.e. current unsubmitted order)
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /cart/update/:
+    post:
+      summary: Update user's cart. E.g. remove some order item, or update its count.
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdate'
+      responses:
+        200:
+          description: OK. Return updated order.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /complete_order/:
+    post:
+      summary: Completes current user's order and sets a new empty order as cart.
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: OK
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /current_user/:
+    get:
+      summary: Get current user's data
+      security:
+        - bearerAuth: [ ]
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Update current user's data
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /current_user/orders/:
+    get:
+      summary: Get user's last orders
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOrders'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /repeat_order/:
+    post:
+      summary: Repeats user's previous order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderId'
+
+      responses:
+        200:
+          description: OK
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    page_size:
+      name: page_size
+      in: query
+      schema:
+        type: integer
+        default: 5
+
+    page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+
+    path_product_id:
+      name: product_id
+      in: path
+      required: true
+      schema:
+        type: integer
+
+    path_category_id:
+      name: category_id
+      in: path
+      schema:
+        type: integer
+
+    query_category_id:
+      name: category_id
+      in: query
+      schema:
+        type: integer
+
+    include_products:
+      name: include_products
+      in: query
+      schema:
+        type: boolean
+
+  schemas:
+    Paginated:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        category:
+          type: integer
+
+    ProductId:
+      type: object
+      properties:
+        product_id:
+          type: integer
+
+    PaginatedProducts:
+      allOf:
+        - $ref: '#/components/schemas/Paginated'
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Product'
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        products:
+          type: array
+          required: false
+          description: Optional product list. Empty if include_products parameter is false.
+          items:
+            $ref: '#/components/schemas/Product'
+
+    PaginatedCategories:
+      allOf:
+        - $ref: '#/components/schemas/Paginated'
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Category'
+
+    UserRegistration:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        password:
+          type: string
+        password2:
+          type: string
+
+    User:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+
+    UserUpdate:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: integer
+        order_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderEntry'
+
+    OrderId:
+      type: object
+      properties:
+        order_id:
+          type: integer
+
+    OrderEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        order:
+          type: integer
+          description: Order id
+        product:
+          $ref: '#/components/schemas/Product'
+
+    PaginatedOrders:
+      allOf:
+        - $ref: '#/components/schemas/Paginated'
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/Order'
+
+    OrderUpdate:
+      type: object
+      properties:
+        clear:
+          type: boolean
+          description: If true - clear the whole order.
+        order_entries:
+          type: array
+          description: List of order entries to update
+          items:
+            $ref: '#/components/schemas/OrderEntryUpdate'
+
+    OrderEntryUpdate:
+      type: object
+      properties:
+        id:
+          type: integer
+        remove:
+          type: boolean
+          description: Remove order entry from cart if it set to true
+        count:
+          type: integer
+
+  responses:
+    Unauthorized:
+      description: Unauthorized
