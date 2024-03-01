@@ -42,7 +42,8 @@ class ChoiceViewSet(viewsets.ModelViewSet):
     serializer_class = ChoiceSerializer
     filter_backends = [MinChoiceCountFilter, filters.OrderingFilter, filters.SearchFilter]
 
-#______________________________
+
+# ______________________________
 
 class ArticleViewSet(viewsets.ModelViewSet):
     queryset = Article.objects.all().order_by('id')
@@ -52,7 +53,8 @@ class ArticleViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter, MinArticleTextLength]
     search_fields = ["id", "title", "authors__first_name", "authors__last_name"]
 
-#________________________________
+
+# ________________________________
 
 class ProductsViewSet(viewsets.mixins.ListModelMixin, viewsets.mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Product.objects.prefetch_related('category').order_by('id')
@@ -60,10 +62,12 @@ class ProductsViewSet(viewsets.mixins.ListModelMixin, viewsets.mixins.RetrieveMo
     pagination_class = DefaultPagination
     filter_backends = [CategoryIdFilter]
 
+
 class CategoryViewSet(viewsets.mixins.ListModelMixin, viewsets.mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Category.objects.all().order_by('id')
     pagination_class = DefaultPagination
     serializer_class = serializers.CategorySerializer
+
 
 class AddToCartView(APIView):
     permission_classes = [IsAuthenticated]
@@ -77,6 +81,7 @@ class AddToCartView(APIView):
         shopping_cart.order_entries.update_or_create(product=product, defaults={'count': F("count") + 1},
                                                      create_defaults={"product": product, "order": shopping_cart})
         return Response({"detail": 'OK'}, status=status.HTTP_200_OK)
+
 
 class CartSetView(APIView):
     permission_classes = [IsAuthenticated]
@@ -120,6 +125,7 @@ class CartUpdateView(APIView):
 
         return Response(data=update_order.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class CompleteOrderView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -162,6 +168,7 @@ class RepeatOrder(APIView):
 
         return Response(status=status.HTTP_200_OK)
 
+
 class UserOrders(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = DefaultPagination
@@ -170,6 +177,7 @@ class UserOrders(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         return Order.objects.filter(profile=self.request.user.profile)
+
 
 class UserCreateView(APIView):
     serializers_class = serializers.UserSerializer
