@@ -44,6 +44,16 @@ class ChoiceViewSet(viewsets.ModelViewSet):
 
 #______________________________
 
+class ArticleViewSet(viewsets.ModelViewSet):
+    queryset = Article.objects.all().order_by('id')
+    serializer_class = serializers.ArticleSerializer
+    pagination_class = DefaultPagination
+
+    filter_backends = [filters.SearchFilter, MinArticleTextLength]
+    search_fields = ["id", "title", "authors__first_name", "authors__last_name"]
+
+#________________________________
+
 class ProductsViewSet(viewsets.mixins.ListModelMixin, viewsets.mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Product.objects.prefetch_related('category').order_by('id')
     serializer_class = serializers.ProductSerializer
