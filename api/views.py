@@ -135,6 +135,33 @@ class CompleteOrderView(APIView):
 
         return Response(status=status.HTTP_200_OK)
 
+
+class RepeatOrder(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request: Request):
+        shopping_cart = request.user.profile.shopping_cart
+        order_id: str = request.data.get('order_id')
+
+        if not order_id or not order_id.isdigit():
+            return Response(data={'message': 'Incorrect order id'}, status=status.HTTP_400_BAD_REQUEST)
+
+        order = request.user.profile.orders.filter(id=order_id).first()
+
+        if not order:
+            return Response(data={'message': 'Order not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Clear current shopping cart
+        shopping_cart.order_entries.all().delete()
+
+        # load order_entries to shoppingcart from selected order
+        OrderEntry.objects.bulk_create(
+            OrderEntry(count=order_entry.count, product=order_entry.product, order=shopping_cart) for
+            order_entry in
+            order.order_entries.all())
+
+        return Response(status=status.HTTP_200_OK)
+
 class UserOrders(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = DefaultPagination
