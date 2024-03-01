@@ -120,6 +120,21 @@ class CartUpdateView(APIView):
 
         return Response(data=update_order.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class CompleteOrderView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request: Request):
+        shopping_cart = request.user.profile.shopping_cart
+        if shopping_cart.order_entries.exists():
+            profile = request.user.profile
+            shopping_cart.status = Order.Status.COMPLETED
+            profile.shopping_cart = Order.objects.create(status=Order.Status.INITIAL, profile=profile)
+
+            shopping_cart.save()
+            profile.save()
+
+        return Response(status=status.HTTP_200_OK)
+
 class UserOrders(viewsets.mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = DefaultPagination
