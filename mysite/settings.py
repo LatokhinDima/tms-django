@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'articles',
     'shop',
+    'django_rq',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -141,4 +142,12 @@ CACHES = {
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'api.pagination.DefaultPagination',
     'DEFAULT_AUTHENTICATION_CLASSES': 'rest_framework_simplejwt.authentication.JWTAuthentication',
+}
+
+RQ_QUEUES = {
+    'default': {
+       'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
 }

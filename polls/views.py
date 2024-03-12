@@ -5,6 +5,7 @@ from django.views.decorators.cache import cache_page
 
 from .models import Question, Choice
 from .forms import QuestionForm
+from .jobs import update_question_view_count
 
 
 @cache_page(60)
@@ -19,6 +20,7 @@ def index(request):
 
 
 def detail(request, question_id: int):
+    update_question_view_count.delay(question_id)
     question = get_object_or_404(Question, id=question_id,
                                  status=Question.Status.APPROVED,
                                  pub_date__lte=timezone.now())

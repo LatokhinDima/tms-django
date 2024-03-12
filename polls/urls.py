@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from . import views
 
@@ -10,4 +10,5 @@ urlpatterns = [
     path('<int:question_id>/vote', views.vote, name='vote'),
     path('<int:question_id>/results', views.results, name='results'),
     path('create', views.create_question, name='create'),
+    path('django_rq/', include('django_rq.urls')),
 ]
